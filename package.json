@@ -4,8 +4,8 @@
   "description": "A personal Website for WMZimmerman",
   "main": "index.js",
   "scripts": {
-      "test": "echo \"Error: no test specified\" && exit 1",
-      "start": "node index.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/WMaxZimmerman/WMaxZimmerman-Site/issues"
   },
-  "homepage": "https://github.com/WMaxZimmerman/WMaxZimmerman-Site#readme"
+  "homepage": "https://github.com/WMaxZimmerman/WMaxZimmerman-Site#readme",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.16.2",
+    "request": "^2.83.0"
+  }
 }
