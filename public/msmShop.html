@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>WMZimmerman</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
+        <script src="msm/shopViewmodel.js"></script>
+        <style>
+         /* Remove the navbar's default margin-bottom and rounded borders */
+         .navbar {
+             margin-bottom: 0;
+             border-radius: 0;
+         }
+
+         /* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+         .row.content {height: 450px}
+
+         /* Set gray background color and 100% height */
+         .sidenav {
+             padding-top: 20px;
+             background-color: #f1f1f1;
+             height: 100%;
+         }
+
+         /* Set black background color, white text and some padding */
+         footer {
+             background-color: #555;
+             color: white;
+             padding: 15px;
+         }
+
+         /* On small screens, set height to 'auto' for sidenav and grid */
+         @media screen and (max-width: 767px) {
+             .sidenav {
+                 height: auto;
+                 padding: 15px;
+             }
+             .row.content {height:auto;}
+         }
+        </style>
+        <script>
+
+        </script>
+    </head>
+    <body style="background-color: #a1a2a3">
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Logo</a>
+                </div>
+                <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="index.html">Home</a></li>
+                        <li><a href="msmShop.html">Shop</a></li>
+                        <li><a href="msmTrade.html">Trade</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <!-- <li><a href="#"><span class="glyphicon glyphicon-log-in"></span> Login</a></li> -->
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid text-center">
+            <div class="col-xs-12">
+                <div class="row">
+                    <div class="col-lg-2 col-xs-4">
+                        <label>Card</label>
+                        <input type="text" class="form-control" data-bind="value: CardFilter, valueUpdate: 'afterkeydown'" />
+                    </div>
+                    <div class="col-lg-2 col-xs-4">
+                        <label>Set</label>
+                        <select class="form-control" data-bind="options: Sets,
+                                       optionsText: 'Name',
+                                       value: SelectedSet">
+                        </select>
+                    </div>
+                    <div class="col-lg-2 col-xs-4">
+                        <label>Cost</label>
+                        <input type="text" class="form-control" data-bind="value: CostFilter, valueUpdate: 'afterkeydown'" />
+                    </div>
+                </div>
+                <hr />
+            </div>
+            <div class="col-xs-6">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <th style="text-align: center">Card</th>
+                                <th style="text-align: center">Set</th>
+                                <th style="text-align: center">Cost</th>
+                                <th style="text-align: center"></th>
+                            </thead>
+                            <tbody data-bind="foreach: FilteredCards">
+                                <tr>
+                                    <td data-bind="html: Name"></td>
+                                    <td data-bind="html: Set"></td>
+                                    <td data-bind="html: '$' + Cost"></td>
+                                    <td><button data-bind="click: $root.AddCard">Add</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <th style="text-align: center">Card</th>
+                        <th style="text-align: center">Set</th>
+                        <th style="text-align: center">Cost</th>
+                        <th style="text-align: center" data-bind="html: '$' + PurchaseTotal()"></th>
+                    </thead>
+                    <tbody data-bind="foreach: PurchaseCards">
+                        <tr>
+                            <td data-bind="html: Name"></td>
+                            <td data-bind="html: Set"></td>
+                            <td data-bind="html: '$' + Cost"></td>
+                            <td><button data-bind="click: $root.RemoveCard">Remove</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
