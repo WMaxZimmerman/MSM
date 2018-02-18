@@ -24,14 +24,27 @@ var ViewModel = function() {
     self.CardFilter = ko.observable("");
     self.SetFilter = ko.observable("");
     self.CostFilter = ko.observable("");
+    self.SelectedOperator = ko.observable();
+
+    self.Operators = ko.observableArray([]);
 
     self.FilteredCards = ko.computed(function() {
         return ko.utils.arrayFilter(self.PriceCards(), function(card) {
             return (card.Name.indexOf(self.CardFilter()) > -1
-                    && (card.Set == self.SelectedSet().Name || self.SelectedSet().Id == 0));
-                    //&& card.Cost.indexOf(self.CostFilter()) > -1);
+                    && (card.Set == self.SelectedSet().Name || self.SelectedSet().Id == 0)
+                    && self.CompareCost(Number(card.Cost)));
         });
     });
+
+    self.CompareCost = function(cardCost){
+        var operator = self.SelectedOperator().name;
+        var filterCost = Number(self.CostFilter());
+        if (operator == ">="){
+            return cardCost >= filterCost;
+        } else {
+            return cardCost <= filterCost;
+        }
+    };
 
     self.PurchaseTotal = ko.pureComputed(function() {
         var total = 0;
@@ -51,19 +64,7 @@ var ViewModel = function() {
         self.GetSets();
     };
 
-    self.SetWantCard = function(cardData) {
-        var newCard = new Card();
-
-        if (cardData) {
-            newCard.Name = cardData.name;
-            newCard.Set = cardData.set;
-            newCard.Cost = cardData.cost.replace("$", "");
-        }
-
-        self.WantCards.push(newCard);
-    };
-
-    self.SetPriceCard = function(cardData) {
+    self.SetShopCard = function(cardData) {
         var newCard = new Card();
 
         if (cardData) {
@@ -98,23 +99,7 @@ var ViewModel = function() {
     };
 
     // API Methods
-    self.GetWantCards = function() {
-        $.ajax({
-            url: "/msmWantCards",
-            type: "GET",
-            dataType: "json",
-            success: function(data) {
-                for(var i = 0; i < data.length; i ++){
-                    self.SetWantCard(data[i]);
-                }
-            },
-            error: function(request, error) {
-                alert(error.responseJSON.Message);
-            }
-        });
-    };
-
-    self.GetPriceCards = function(setData) {
+    self.GetShopCards = function(setData) {
         for(var i = 0; i < setData.length; i ++){
             var jsonData = setData[i];
             $.ajax({
@@ -152,8 +137,7 @@ var ViewModel = function() {
                 for(var i = 0; i < data.length; i ++){
                     self.SetSet(data[i]);
                 }
-                self.GetPriceCards(data);
-                //self.GetWantCards();
+                self.GetShopCards(data);
             },
             error: function(request, error) {
                 alert(error.responseJSON.Message);

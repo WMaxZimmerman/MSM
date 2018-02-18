@@ -17,24 +17,37 @@ var Set = function() {
 var ViewModel = function() {
     var self = this;
 
-    self.WantCards = ko.observableArray([]);
-    self.TradeCards = ko.observableArray([]);
+    self.ShopCards = ko.observableArray([]);
+    self.CustCards = ko.observableArray([]);
     self.Sets = ko.observableArray([]);
     self.CardFilter = ko.observable("");
     self.SetFilter = ko.observable("");
-    self.CostFilter = ko.observable("");
+    self.CostFilter = ko.observable(0);
+    self.SelectedOperator = ko.observable();
+
+    self.Operators = ko.observableArray([]);
 
     self.FilteredCards = ko.computed(function() {
-        return ko.utils.arrayFilter(self.WantCards(), function(card) {
+        return ko.utils.arrayFilter(self.ShopCards(), function(card) {
             return (card.Name.indexOf(self.CardFilter()) > -1
-                    && (card.Set == self.SelectedSet().Name || self.SelectedSet().Id == 0));
-                    //&& card.Cost.indexOf(self.CostFilter()) > -1);
+                    && (card.Set == self.SelectedSet().Name || self.SelectedSet().Id == 0)
+                    && self.CompareCost(Number(card.Cost)));
         });
     });
 
+    self.CompareCost = function(cardCost){
+        var operator = self.SelectedOperator().name;
+        var filterCost = Number(self.CostFilter());
+        if (operator == ">="){
+            return cardCost >= filterCost;
+        } else {
+            return cardCost <= filterCost;
+        }
+    };
+
     self.PurchaseTotal = ko.pureComputed(function() {
         var total = 0;
-        var cards = self.TradeCards();
+        var cards = self.CustCards();
 
         for(var i = 0; i < cards.length; i++) {
             total += Number(cards[i].Cost);
@@ -47,10 +60,16 @@ var ViewModel = function() {
 
     // Methods
     self.Init = function() {
+        self.SetOperators();
         self.GetSets();
     };
 
-    self.SetWantCard = function(cardData) {
+    self.SetOperators = function(){
+        self.Operators.push({ id: 0, name: ">=" });
+        self.Operators.push({ id: 0, name: "<=" });
+    };
+
+    self.SetShopCard = function(cardData) {
         var newCard = new Card();
 
         if (cardData) {
@@ -59,7 +78,7 @@ var ViewModel = function() {
             newCard.Cost = cardData.cost.replace("$", "");
         }
 
-        self.WantCards.push(newCard);
+        self.ShopCards.push(newCard);
     };
 
     self.SetSet = function(setData) {
@@ -76,24 +95,22 @@ var ViewModel = function() {
 
     self.AddCard = function(card)
     {
-        self.TradeCards.push(card);
+        self.CustCards.push(card);
     };
 
     self.RemoveCard = function(card)
     {
-        self.TradeCards.remove(card);
+        self.CustCards.remove(card);
     };
 
     // API Methods
-    self.GetWantCards = function() {
+    self.GetShopCards = function() {
         $.ajax({
             url: "/msmWantCards",
             type: "GET",
             dataType: "json",
             success: function(data) {
-                for(var i = 0; i < data.length; i ++){
-                    self.SetWantCard(data[i]);
-                }
+                self.ProcessArray(data, self.SetShopCard, self.Done);
             },
             error: function(request, error) {
                 alert(error.responseJSON.Message);
@@ -121,7 +138,7 @@ var ViewModel = function() {
                     self.SetSet(data[i]);
                 }
 
-                self.GetWantCards();
+                self.GetShopCards();
             },
             error: function(request, error) {
                 alert(error.responseJSON.Message);

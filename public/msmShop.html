@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>WMZimmerman</title>
+        <title>wmz-msm</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js"></script>
-        <script src="msm/shopViewmodel.js"></script>
+        <script src="msm/tradeViewmodel.js"></script>
         <style>
          /* Remove the navbar's default margin-bottom and rounded borders */
          .navbar {
@@ -55,7 +56,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="#">Logo</a>
+                    <!-- <a class="navbar-brand" href="#" style="background: url(images/LOGO.png) no - repeat center center"></a> -->
                 </div>
                 <div class="collapse navbar-collapse" id="myNavbar">
                     <ul class="nav navbar-nav">
@@ -79,14 +80,16 @@
                     </div>
                     <div class="col-lg-2 col-xs-4">
                         <label>Set</label>
-                        <select class="form-control" data-bind="options: Sets,
-                                       optionsText: 'Name',
-                                       value: SelectedSet">
-                        </select>
+                        <select class="form-control" data-bind="options: Sets, optionsText: 'Name', value: SelectedSet"></select>
                     </div>
                     <div class="col-lg-2 col-xs-4">
                         <label>Cost</label>
-                        <input type="text" class="form-control" data-bind="value: CostFilter, valueUpdate: 'afterkeydown'" />
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <select data-bind="options: Operators, optionsText: 'name', value: SelectedOperator"></select>
+                            </span>
+                            <input type="text" class="form-control" data-bind="value: CostFilter, valueUpdate: 'afterkeydown'" />
+                        </div>
                     </div>
                 </div>
                 <hr />
@@ -106,7 +109,7 @@
                                     <td data-bind="html: Name"></td>
                                     <td data-bind="html: Set"></td>
                                     <td data-bind="html: '$' + Cost"></td>
-                                    <td><button data-bind="click: $root.AddCard">Add</button></td>
+                                    <td><button class="btn btn-success" data-bind="click: $root.AddCard"><i class="fas fa-plus-square"></i></button></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -116,17 +119,15 @@
             <div class="col-xs-6">
                 <table class="table table-striped table-bordered">
                     <thead>
-                        <th style="text-align: center">Card</th>
-                        <th style="text-align: center">Set</th>
                         <th style="text-align: center">Cost</th>
-                        <th style="text-align: center" data-bind="html: '$' + PurchaseTotal()"></th>
+                        <th style="text-align: center">Card</th>
+                        <th style="text-align: center" data-bind="html: 'Total: $' + PurchaseTotal()"></th>
                     </thead>
-                    <tbody data-bind="foreach: PurchaseCards">
+                    <tbody data-bind="foreach: CustCards">
                         <tr>
-                            <td data-bind="html: Name"></td>
-                            <td data-bind="html: Set"></td>
                             <td data-bind="html: '$' + Cost"></td>
-                            <td><button data-bind="click: $root.RemoveCard">Remove</button></td>
+                            <td data-bind="html: Name + ' (' + Set + ')'"></td>
+                            <td><button class="btn btn-danger" data-bind="click: $root.RemoveCard"><i class="fas fa-minus-square"></i></button></td>
                         </tr>
                     </tbody>
                 </table>
