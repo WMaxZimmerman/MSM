@@ -17,9 +17,8 @@ var Set = function() {
 var ViewModel = function() {
     var self = this;
 
-    self.WantCards = ko.observableArray([]);
-    self.PriceCards = ko.observableArray([]);
-    self.PurchaseCards = ko.observableArray([]);
+    self.ShopCards = ko.observableArray([]);
+    self.CustCards = ko.observableArray([]);
     self.Sets = ko.observableArray([]);
     self.CardFilter = ko.observable("");
     self.SetFilter = ko.observable("");
@@ -29,7 +28,7 @@ var ViewModel = function() {
     self.Operators = ko.observableArray([]);
 
     self.FilteredCards = ko.computed(function() {
-        return ko.utils.arrayFilter(self.PriceCards(), function(card) {
+        return ko.utils.arrayFilter(self.ShopCards(), function(card) {
             return (card.Name.indexOf(self.CardFilter()) > -1
                     && (card.Set == self.SelectedSet().Name || self.SelectedSet().Id == 0)
                     && self.CompareCost(Number(card.Cost)));
@@ -48,7 +47,7 @@ var ViewModel = function() {
 
     self.PurchaseTotal = ko.pureComputed(function() {
         var total = 0;
-        var cards = self.PurchaseCards();
+        var cards = self.CustCards();
 
         for(var i = 0; i < cards.length; i++) {
             total += Number(cards[i].Cost);
@@ -61,7 +60,13 @@ var ViewModel = function() {
 
     // Methods
     self.Init = function() {
+        self.SetOperators();
         self.GetSets();
+    };
+
+    self.SetOperators = function(){
+        self.Operators.push({ id: 0, name: ">=" });
+        self.Operators.push({ id: 0, name: "<=" });
     };
 
     self.SetShopCard = function(cardData) {
@@ -73,7 +78,7 @@ var ViewModel = function() {
             newCard.Cost = cardData.cost.replace("$", "");
         }
 
-        self.PriceCards.push(newCard);
+        self.ShopCards.push(newCard);
     };
 
     self.SetSet = function(setData) {
@@ -90,12 +95,12 @@ var ViewModel = function() {
 
     self.AddCard = function(card)
     {
-        self.PurchaseCards.push(card);
+        self.CustCards.push(card);
     };
 
     self.RemoveCard = function(card)
     {
-        self.PurchaseCards.remove(card);
+        self.CustCards.remove(card);
     };
 
     // API Methods
@@ -109,7 +114,7 @@ var ViewModel = function() {
                 contentType: "application/json",
                 data: JSON.stringify(jsonData),
                 success: function (data) {
-                    self.ProcessArray(data, self.SetPriceCard, self.Done);
+                    self.ProcessArray(data, self.SetShopCard, self.Done);
                 },
                 error: function (request, error) {
                    //alert("An error occured!");
